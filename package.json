@@ -1,0 +1,17 @@
+{
+  "name": "markast",
+  "version": "1.0.0",
+  "description": "JavaScript parser that converts Markdown into a custom JSON-based Abstract Syntax Tree (AST).",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "markdown",
+    "ast",
+    "parser",
+    "markdown-to-json"
+  ],
+  "author": "Vaishnav Chandurkar",
+  "license": "MIT"
+}
