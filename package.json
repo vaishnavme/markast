@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "JavaScript parser that converts Markdown into a custom JSON-based Abstract Syntax Tree (AST).",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
