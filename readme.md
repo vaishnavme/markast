@@ -14,6 +14,7 @@ It’s not meant to be a production-ready tool — it’s a **learning experimen
 ### Features
 
 **Markdown to JSON (WIP)**
+
 Supported syntax
 
 - [x] heading
