@@ -13,9 +13,21 @@ It’s not meant to be a production-ready tool — it’s a **learning experimen
 
 ### Features
 
-- [x] Markdown to JSON
-- [ ] JSON to Markdown
-- [ ] HTML to Markdown
+**Markdown to JSON (WIP)**
+Supported syntax
+
+- [x] heading
+- [x] paragraph
+- [x] link
+- [x] image
+- [x] list (ordered/un-ordered)
+- [ ] table
+- [ ] pre (codeblock)
+
+**Upcoming**
+
+- JSON to Markdown
+- HTML to Markdown
 
 ### API Docs
 
