@@ -11,7 +11,9 @@ This is second paragraph with **bold content**
 
 ![Alt text](https://example.com/image.png)
 
-> This is blockquote with **bold** and *italic* text, along with [a sample link](https://sample.com) 
+this can be another inline code example like \`const hello = () => console.log('hello world')\`
+
+> This is blockquote with **bold** and *italic* text, along with [a sample link](https://sample.com) and line code
 `;
 
 // [
