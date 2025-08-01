@@ -5,6 +5,7 @@ const italic = "italic";
 const text = "text";
 const link = "link";
 const image = "image";
+const blockquote = "blockquote";
 
 const list = "list";
 const ordered = "ordered";
@@ -20,6 +21,7 @@ const regex = {
   [ordered]: /^(\s*)(\d+)\.\s+(.*)/,
   [unordered]: /^(\s*)[-*+]\s+(.*)/,
   [image]: /^!\[([^\]]*)\]\(([^)]+)\)/,
+  [blockquote]: /^>\s?(.*)/,
 };
 
 const subNodesRules = [
@@ -150,6 +152,13 @@ class MarkdownToJSON {
               listItemNodes,
             ],
           };
+          break;
+        }
+
+        case regex.blockquote.test(line): {
+          const blockquoteResult = regex.blockquote.exec(line);
+          const childNodes = this.#parseLine(blockquoteResult[1]);
+          this.#tree.push({ type: blockquote, children: childNodes });
           break;
         }
 

@@ -22,8 +22,9 @@ Supported syntax
 - [x] link
 - [x] image
 - [x] list (ordered/un-ordered)
-- [ ] table
-- [ ] pre (codeblock)
+- [x] blockquote
+- [ ] code
+- [ ] codeblock
 
 **Upcoming**
 
