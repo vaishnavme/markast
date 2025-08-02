@@ -5,6 +5,8 @@ const italic = "italic";
 const text = "text";
 const link = "link";
 const image = "image";
+const blockquote = "blockquote";
+const code = "code";
 
 const list = "list";
 const ordered = "ordered";
@@ -15,18 +17,21 @@ const regex = {
   [heading]: /^(#{1,6})\s+(.*)/,
   [bold]: /^\*\*(.+?)\*\*/,
   [italic]: /^\*(.+?)\*/,
-  [text]: /^[^\*\[]+/, // plain text until a special char
+  [text]: /^[^\*\[`]+/, // plain text until a special char
   [link]: /^\[([^\]]+)\]\(([^)]+)\)/,
   [ordered]: /^(\s*)(\d+)\.\s+(.*)/,
   [unordered]: /^(\s*)[-*+]\s+(.*)/,
   [image]: /^!\[([^\]]*)\]\(([^)]+)\)/,
+  [blockquote]: /^>\s?(.*)/,
+  [code]: /^`([^`]+)`/,
 };
 
 const subNodesRules = [
   { type: bold, regex: regex.bold },
   { type: italic, regex: regex.italic },
-  { type: text, regex: regex.text },
+  { type: code, regex: regex.code },
   { type: link, regex: regex.link },
+  { type: text, regex: regex.text },
 ];
 
 class MarkdownToJSON {
@@ -54,18 +59,21 @@ class MarkdownToJSON {
       let matched = false;
       for (const rule of subNodesRules) {
         const result = rule.regex.exec(remainingText);
+
         if (result) {
           matched = true;
-          if (rule.type === text) {
-            nodes.push({ type: text, value: result[0] });
-          } else if (rule.type === bold || rule.type === italic) {
+          if (rule.type === bold || rule.type === italic) {
             nodes.push({ type: rule.type, value: result[1] });
+          } else if (rule.type === code) {
+            nodes.push({ type: code, value: result[1] }); // Add this!
           } else if (rule.type === link) {
             nodes.push({
               type: link,
               value: result[1],
               href: result[2],
             });
+          } else if (rule.type === text) {
+            nodes.push({ type: text, value: result[0] });
           }
           remainingText = remainingText.slice(result[0].length);
           break;
@@ -150,6 +158,13 @@ class MarkdownToJSON {
               listItemNodes,
             ],
           };
+          break;
+        }
+
+        case regex.blockquote.test(line): {
+          const blockquoteResult = regex.blockquote.exec(line);
+          const childNodes = this.#parseLine(blockquoteResult[1]);
+          this.#tree.push({ type: blockquote, children: childNodes });
           break;
         }
 
