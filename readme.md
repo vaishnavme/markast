@@ -23,8 +23,8 @@ Supported syntax
 - [x] image
 - [x] list (ordered/un-ordered)
 - [x] blockquote
-- [ ] code
-- [ ] codeblock
+- [x] code
+- [x] codeblock
 
 **Upcoming**
 
