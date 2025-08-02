@@ -1,180 +1,204 @@
+// nodes
 const heading = "heading";
 const paragraph = "paragraph";
+const blockquote = "blockquote";
+const list = "list";
+const codeblock = "codeblock";
+const image = "image";
+
+// child nodes
+const text = "text";
 const bold = "bold";
 const italic = "italic";
-const text = "text";
 const link = "link";
-const image = "image";
-const blockquote = "blockquote";
 const code = "code";
 
-const list = "list";
+const listItem = "listItem";
 const ordered = "ordered";
 const unordered = "unordered";
-const listItem = "listItem";
+
+const emptyLine = "emptyLine";
 
 const regex = {
   [heading]: /^(#{1,6})\s+(.*)/,
+  [blockquote]: /^>\s?(.*)/,
+  [image]: /^!\[([^\]]*)\]\(([^)]+)\)/,
+
   [bold]: /^\*\*(.+?)\*\*/,
   [italic]: /^\*(.+?)\*/,
   [text]: /^[^\*\[`]+/, // plain text until a special char
   [link]: /^\[([^\]]+)\]\(([^)]+)\)/,
+  [code]: /^`([^`]+)`/,
+
   [ordered]: /^(\s*)(\d+)\.\s+(.*)/,
   [unordered]: /^(\s*)[-*+]\s+(.*)/,
-  [image]: /^!\[([^\]]*)\]\(([^)]+)\)/,
-  [blockquote]: /^>\s?(.*)/,
-  [code]: /^`([^`]+)`/,
+
+  codeblockStart: /^```(\w+)?$/,
+  codeblockEnd: /^```[\s]*$/,
 };
 
-const subNodesRules = [
+const childNodeRules = [
   { type: bold, regex: regex.bold },
   { type: italic, regex: regex.italic },
-  { type: code, regex: regex.code },
   { type: link, regex: regex.link },
+  { type: code, regex: regex.code },
   { type: text, regex: regex.text },
 ];
 
 class MarkdownToJSON {
   #tree = [];
 
-  #orderedContent = {};
-  #unorderedContent = {};
-
-  #insertListNodes({ orderedInsert, unorderedInsert }) {
-    if (this.#orderedContent?.type && orderedInsert) {
-      this.#tree.push(this.#orderedContent);
-      this.#orderedContent = {};
-    }
-
-    if (this.#unorderedContent?.type && unorderedInsert) {
-      this.#tree.push(this.#unorderedContent);
-      this.#unorderedContent = {};
-    }
-  }
-
   #parseLine(line) {
-    let remainingText = line;
-    const nodes = [];
-    while (remainingText?.length > 0) {
+    let remainingLine = line;
+    const childNodes = [];
+
+    while (remainingLine.length > 0) {
       let matched = false;
-      for (const rule of subNodesRules) {
-        const result = rule.regex.exec(remainingText);
+      for (const rule of childNodeRules) {
+        const result = rule.regex.exec(remainingLine);
 
         if (result) {
           matched = true;
-          if (rule.type === bold || rule.type === italic) {
-            nodes.push({ type: rule.type, value: result[1] });
-          } else if (rule.type === code) {
-            nodes.push({ type: code, value: result[1] }); // Add this!
+
+          if (rule.type === bold) {
+            childNodes.push({ type: bold, value: result[1] });
+          } else if (rule.type === italic) {
+            childNodes.push({ type: italic, value: result[1] });
           } else if (rule.type === link) {
-            nodes.push({
-              type: link,
-              value: result[1],
-              href: result[2],
-            });
+            childNodes.push({ type: link, value: result[1], href: result[2] });
+          } else if (rule.type === code) {
+            childNodes.push({ type: code, value: result[1] });
           } else if (rule.type === text) {
-            nodes.push({ type: text, value: result[0] });
+            childNodes.push({ type: text, value: result[0] });
           }
-          remainingText = remainingText.slice(result[0].length);
+          remainingLine = remainingLine.slice(result[0].length);
           break;
         }
       }
+
       if (!matched) {
-        nodes.push({ type: text, value: remainingText[0] });
-        remainingText = remainingText.slice(1);
+        childNodes.push({ type: text, value: remainingLine[0] });
+        remainingLine = remainingLine.slice(1);
       }
     }
-    return nodes;
+
+    return childNodes;
   }
 
-  parse(string) {
-    if (!string) {
-      throw new Error("no input string provided");
-    }
-    const lines = string.split("\n");
-
-    lines.forEach((line) => {
-      switch (true) {
-        case regex.heading.test(line): {
-          this.#insertListNodes({ orderedInsert: true, unorderedInsert: true });
-          const result = regex.heading.exec(line);
-
-          this.#tree.push({
-            type: heading,
-            content: result[2],
-            attr: {
-              level: result[1].length,
-            },
-          });
-          break;
-        }
-
-        case regex.image.test(line): {
-          this.#insertListNodes({ orderedInsert: true, unorderedInsert: true });
-
-          const imageMatch = regex.image.exec(line);
-          this.#tree.push({
-            type: image,
-            alt: imageMatch[1],
-            src: imageMatch[2],
-          });
-          break;
-        }
-
-        case regex.ordered.test(line): {
-          this.#insertListNodes({
-            orderedInsert: false,
-            unorderedInsert: true,
-          });
-
-          const orderedMatch = regex.ordered.exec(line);
-          const listItemNodes = this.#parseLine(orderedMatch[3]);
-
-          this.#orderedContent = {
-            type: listItem,
-            ordered: true,
-            children: [
-              ...(this.#orderedContent?.children || []),
-              listItemNodes,
-            ],
-          };
-          break;
-        }
-
-        case regex.unordered.test(line): {
-          this.#insertListNodes({
-            orderedInsert: true,
-            unorderedInsert: false,
-          });
-
-          const unorderedMatch = regex.unordered.exec(line);
-          const listItemNodes = this.#parseLine(unorderedMatch[2]);
-
-          this.#unorderedContent = {
-            type: list,
-            ordered: false,
-            children: [
-              ...(this.#unorderedContent?.children || []),
-              listItemNodes,
-            ],
-          };
-          break;
-        }
-
-        case regex.blockquote.test(line): {
-          const blockquoteResult = regex.blockquote.exec(line);
-          const childNodes = this.#parseLine(blockquoteResult[1]);
-          this.#tree.push({ type: blockquote, children: childNodes });
-          break;
-        }
-
-        default:
-          this.#insertListNodes({ orderedInsert: true, unorderedInsert: true });
-          const childNodes = this.#parseLine(line);
-          this.#tree.push({ type: paragraph, children: childNodes });
-          break;
-      }
+  #heading(result) {
+    this.#tree.push({
+      type: heading,
+      level: result[1].length,
+      children: this.#parseLine(result[2]),
     });
+  }
+
+  #blockquote(result) {
+    this.#tree.push({
+      type: blockquote,
+      children: this.#parseLine(result[1]),
+    });
+  }
+
+  #image(result) {
+    this.#tree.push({
+      type: image,
+      alt: result[1],
+      src: result[2],
+    });
+  }
+
+  #list({ currentIndex, lines, ordered, rule }) {
+    const listItems = [];
+    let listIndex = currentIndex;
+    while (listIndex < lines.length && rule.regex.test(lines[listIndex])) {
+      const result = rule.regex.exec(lines[listIndex]);
+      const plainText = ordered ? result[3] : result[2];
+
+      listItems.push({
+        type: listItem,
+        children: this.#parseLine(plainText),
+      });
+      listIndex += 1;
+    }
+    this.#tree.push({ type: list, ordered, children: listItems });
+    return listIndex;
+  }
+
+  #codeblock({ currentIndex, lines }) {
+    const children = [];
+    let codeLine = currentIndex + 1;
+    while (
+      codeLine < lines.length &&
+      !regex.codeblockEnd.test(lines[codeLine])
+    ) {
+      children.push({ type: text, value: lines[codeLine] });
+      codeLine += 1;
+    }
+    this.#tree.push({
+      type: codeblock,
+      children,
+    });
+
+    return codeLine;
+  }
+
+  parse(markdown) {
+    if (!markdown) {
+      throw new Error("no input provided!");
+    }
+
+    const lines = markdown.split("\n");
+
+    for (let currentIndex = 0; currentIndex < lines.length; currentIndex++) {
+      const currentLine = lines[currentIndex];
+
+      if (currentLine.trim() === "") {
+        this.#tree.push({ type: emptyLine });
+        continue;
+      }
+
+      if (regex.heading.test(currentLine)) {
+        this.#heading(regex.heading.exec(currentLine));
+        continue;
+      }
+
+      if (regex.blockquote.test(currentLine)) {
+        this.#blockquote(regex.blockquote.exec(currentLine));
+        continue;
+      }
+
+      if (regex.image.test(currentLine)) {
+        this.#image(regex.image.exec(currentLine));
+        continue;
+      }
+
+      if (regex.codeblockStart.test(currentLine)) {
+        const processedLines = this.#codeblock({ currentIndex, lines });
+        currentIndex = processedLines;
+        continue;
+      }
+
+      if (
+        regex.ordered.test(currentLine) ||
+        regex.unordered.test(currentLine)
+      ) {
+        const isOrdered = regex.ordered.test(currentLine);
+        const processedLines = this.#list({
+          currentIndex,
+          lines,
+          ordered: isOrdered,
+          rule: { regex: isOrdered ? regex.ordered : regex.unordered },
+        });
+        currentIndex = processedLines - 1;
+        continue;
+      }
+
+      this.#tree.push({
+        type: paragraph,
+        children: this.#parseLine(currentLine),
+      });
+    }
 
     return this.#tree;
   }
