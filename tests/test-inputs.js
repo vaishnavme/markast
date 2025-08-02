@@ -1,15 +1,23 @@
 export const testMarkdownString = `# Welcome
-## heading 2
-This is *italic*, **bold**, and [a link](https://example.com).
+## *heading 2*
+This is *italic*, **bold**, and [a link](https://example.com) and inline \`code-node\`.
 This is second paragraph with **bold content**
 
 - Bullet First bullet **item is bold**
-- Bullet Second bullet **item is italice**
+- Bullet Second bullet *item is italice*
 
 1. Numbered First item **item is bold**
-2. Numbered Second item **item is italice**
+2. Numbered Second item *item is italice*.
 
 ![Alt text](https://example.com/image.png)
+
+\`\`\`
+const hello = () => {
+  console.log("hello world") // comment
+}
+\`\`\`
+
+this should be new line
 
 this can be another inline code example like \`const hello = () => console.log('hello world')\`
 
@@ -19,17 +27,23 @@ this can be another inline code example like \`const hello = () => console.log('
 // [
 //   {
 //     "type": "heading",
-//     "content": "Welcome",
-//     "attr": {
-//       "level": 1
-//     }
+//     "level": 1,
+//     "children": [
+//       {
+//         "type": "text",
+//         "value": "Welcome"
+//       }
+//     ]
 //   },
 //   {
 //     "type": "heading",
-//     "content": "heading 2",
-//     "attr": {
-//       "level": 2
-//     }
+//     "level": 2,
+//     "children": [
+//       {
+//         "type": "italic",
+//         "value": "heading 2"
+//       }
+//     ]
 //   },
 //   {
 //     "type": "paragraph",
@@ -61,6 +75,14 @@ this can be another inline code example like \`const hello = () => console.log('
 //       },
 //       {
 //         "type": "text",
+//         "value": " and inline "
+//       },
+//       {
+//         "type": "code",
+//         "value": "code-node"
+//       },
+//       {
+//         "type": "text",
 //         "value": "."
 //       }
 //     ]
@@ -79,68 +101,81 @@ this can be another inline code example like \`const hello = () => console.log('
 //     ]
 //   },
 //   {
-//     "type": "paragraph",
-//     "children": []
+//     "type": "emptyLine"
 //   },
 //   {
 //     "type": "list",
 //     "ordered": false,
 //     "children": [
-//       [
-//         {
-//           "type": "text",
-//           "value": "Bullet First bullet "
-//         },
-//         {
-//           "type": "bold",
-//           "value": "item is bold"
-//         }
-//       ],
-//       [
-//         {
-//           "type": "text",
-//           "value": "Bullet Second bullet "
-//         },
-//         {
-//           "type": "bold",
-//           "value": "item is italice"
-//         }
-//       ]
+//       {
+//         "type": "listItem",
+//         "children": [
+//           {
+//             "type": "text",
+//             "value": "Bullet First bullet "
+//           },
+//           {
+//             "type": "bold",
+//             "value": "item is bold"
+//           }
+//         ]
+//       },
+//       {
+//         "type": "listItem",
+//         "children": [
+//           {
+//             "type": "text",
+//             "value": "Bullet Second bullet "
+//           },
+//           {
+//             "type": "italic",
+//             "value": "item is italice"
+//           }
+//         ]
+//       }
 //     ]
 //   },
 //   {
-//     "type": "paragraph",
-//     "children": []
+//     "type": "emptyLine"
 //   },
 //   {
-//     "type": "listItem",
+//     "type": "list",
 //     "ordered": true,
 //     "children": [
-//       [
-//         {
-//           "type": "text",
-//           "value": "Numbered First item "
-//         },
-//         {
-//           "type": "bold",
-//           "value": "item is bold"
-//         }
-//       ],
-//       [
-//         {
-//           "type": "text",
-//           "value": "Numbered Second item "
-//         },
-//         {
-//           "type": "bold",
-//           "value": "item is italice"
-//         }
-//       ]
+//       {
+//         "type": "listItem",
+//         "children": [
+//           {
+//             "type": "text",
+//             "value": "Numbered First item "
+//           },
+//           {
+//             "type": "bold",
+//             "value": "item is bold"
+//           }
+//         ]
+//       },
+//       {
+//         "type": "listItem",
+//         "children": [
+//           {
+//             "type": "text",
+//             "value": "Numbered Second item "
+//           },
+//           {
+//             "type": "italic",
+//             "value": "item is italice"
+//           },
+//           {
+//             "type": "text",
+//             "value": "."
+//           }
+//         ]
+//       }
 //     ]
 //   },
 //   {
-//     "type": "paragraph",
-//     "children": []
+//     "type": "emptyLine"
 //   },
 //   {
 //     "type": "image",
@@ -148,8 +183,55 @@ this can be another inline code example like \`const hello = () => console.log('
 //     "src": "https://example.com/image.png"
 //   },
 //   {
+//     "type": "emptyLine"
+//   },
+//   {
+//     "type": "codeblock",
+//     "children": [
+//       {
+//         "type": "text",
+//         "value": "const hello = () => {"
+//       },
+//       {
+//         "type": "text",
+//         "value": "  console.log(\"hello world\") // comment"
+//       },
+//       {
+//         "type": "text",
+//         "value": "}"
+//       }
+//     ]
+//   },
+//   {
+//     "type": "emptyLine"
+//   },
+//   {
 //     "type": "paragraph",
-//     "children": []
+//     "children": [
+//       {
+//         "type": "text",
+//         "value": "this should be new line"
+//       }
+//     ]
+//   },
+//   {
+//     "type": "emptyLine"
+//   },
+//   {
+//     "type": "paragraph",
+//     "children": [
+//       {
+//         "type": "text",
+//         "value": "this can be another inline code example like "
+//       },
+//       {
+//         "type": "code",
+//         "value": "const hello = () => console.log('hello world')"
+//       }
+//     ]
+//   },
+//   {
+//     "type": "emptyLine"
 //   },
 //   {
 //     "type": "blockquote",
@@ -181,12 +263,11 @@ this can be another inline code example like \`const hello = () => console.log('
 //       },
 //       {
 //         "type": "text",
-//         "value": " "
+//         "value": " and line code"
 //       }
 //     ]
 //   },
 //   {
-//     "type": "paragraph",
-//     "children": []
+//     "type": "emptyLine"
 //   }
 // ]
