@@ -36,5 +36,5 @@ Supported syntax
 ```js
 const markast = new Markast();
 
-markast.markdownToJSON(inputString); // converts markdown to JSON (AST)
+markast.toJSON(inputString); // converts markdown to JSON (AST)
 ```
