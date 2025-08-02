@@ -13,7 +13,7 @@ It’s not meant to be a production-ready tool — it’s a **learning experimen
 
 ### Features
 
-**Markdown to JSON (WIP)**
+**Markdown to JSON**
 
 Supported syntax
 
