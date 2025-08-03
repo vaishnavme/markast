@@ -1,18 +1,15 @@
 {
   "name": "markast",
-  "version": "1.0.0",
-  "description": "JavaScript parser that converts Markdown into a custom JSON-based Abstract Syntax Tree (AST).",
-  "main": "index.js",
+  "private": true,
+  "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
   },
-  "keywords": [
-    "markdown",
-    "ast",
-    "parser",
-    "markdown-to-json"
-  ],
-  "author": "Vaishnav Chandurkar",
-  "license": "MIT"
+  "devDependencies": {
+    "typescript": "~5.8.3",
+    "vite": "^7.0.0"
+  }
 }
