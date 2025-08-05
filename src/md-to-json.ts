@@ -1,5 +1,5 @@
-import { nodes, nodesRegex } from "./constants.ts";
-import type { ChildNodeType, TreeType } from "./global.types.ts";
+import { nodes, nodesRegex } from "./constants";
+import type { ChildNodeType, TreeType } from "./global.types";
 
 const childNodeRules = [
   { type: nodes.bold, regex: nodesRegex.bold },
