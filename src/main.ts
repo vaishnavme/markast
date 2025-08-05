@@ -1,17 +1,8 @@
-import MarkdownToJSON from "./md-to-json";
+import Markast from ".";
 import { testMarkdownString } from "./tests/test-inputs";
-
-class Markast {
-  #mdToJSONParser = new MarkdownToJSON();
-
-  mdToJSON(string: string) {
-    return this.#mdToJSONParser.parse(string);
-  }
-}
 
 const markast = new Markast();
 const tree = markast.mdToJSON(testMarkdownString);
-
-console.log("tree: ", tree);
+const markdown = markast.JSONToMd(tree);
 
 export default Markast;
