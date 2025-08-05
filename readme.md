@@ -31,7 +31,7 @@ Supported syntax
 
 - HTML to Markdown
 
-### API Docs
+### API
 
 **Markdown to JSON**
 
@@ -46,3 +46,10 @@ const tree = markast.mdToJSON(input_markdown_string);
 const markast = new Markast();
 const markdown = markast.JSONToMd(input_tree);
 ```
+
+### Limitation
+
+Nested child nodes (e.g., inline formatting like bold inside italic or vice versa) are currently not supported.
+Example: **Bold text with _italic inside_ not working**
+
+Other nested structures—such as paragraphs, headings, and block quotes—are supported.
